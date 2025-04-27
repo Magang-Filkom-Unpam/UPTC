@@ -10,59 +10,102 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     public function register(Request $request) 
-    { 
-        $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email',
-            'gender' => 'required',
-            'password' => 'required'
-        ]);
+    {
+        try {
+            $request->validate([
+                'name' => 'required|string',
+                'email' => 'required|email|unique:users,email',
+                'gender' => ['nullable', 'in:male,female'],
+                'password' => 'required|string|min:6',
+            ]);
+    
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'gender' => $request->gender,
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'gender' => $request->gender,
-            'password' => bcrypt($request->password),
-        ]);
-
-        $token = $user->createToken('api-token')->plainTextToken;
-
-        return response()->json([
-            'user' => $user,
-            'access_token' => $token,
-            'token_type' => 'Bearer'
-        ]);
-
+                'password' => Hash::make($request->password), 
+            ]);
+            $token = $user->createToken('api-token')->plainTextToken;
+            return response()->json([
+                "message" => "Successful create account",
+                "data" => [
+                'user' => $user,
+                'access_token' => $token,
+                'token_type' => 'Bearer'
+                ]
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors' => $e->errors() 
+            ], 422); 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'message' => 'Database Error',
+                'errors' => $e 
+            ], 500); 
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Server Error',
+                'error' => $e->getMessage()
+            ], 500); 
+        }
     }
+    
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.']
+        try {
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required|string',
             ]);
+            $user = User::where('email', $request->email)
+                        ->orWhere('nim', $request->email) 
+                        ->first();
+    
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Invalid credentials',
+                    'error' => 'Email/NIM not found'
+                ], 401); 
+            }
+            if (!Hash::check($request->password, $user->password)) { 
+                return response()->json([
+                    'message' => 'Invalid credentials',
+                    'error' => 'Incorrect password'
+                ], 401);
+            }
+            $token = $user->createToken('api-token')->plainTextToken;
+            return response()->json([
+                "message" => "Login succesfully",
+                "data" =>[
+                    'user' => $user,
+                    'access_token' => $token,
+                    'token_type' => 'Bearer'
+                    ]
+            ], 200); 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Server Error',
+                'error' => $e->getMessage()
+            ], 500); 
         }
-
-        return $user->createToken($request->email)->plainTextToken;
     }
+    
 
-    function logout(Request $request)
+    public function logout(Request $request)
     {
-       
-        // return $request->user(); // untuk mendapatkan user yang sedang login
-        // return auth()->user();
-        // $request->user()->currentAccessToken()->delete(); // untuk menghapus token yang sedang digunakan
-        $request->user()->tokens()->delete(); // untuk menghapus semua token misalkan user menggunakan 2 device mobile dan browser, maka akan terhapus dua-duanya
+        $request->user()->tokens()->delete();
 
-        return json_encode([
-            'message' => 'logout success'
-        ]);
+        return response()->json([
+            'message' => 'Logout success'
+        ], 200); 
     }
 }
