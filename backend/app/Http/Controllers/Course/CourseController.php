@@ -4,15 +4,22 @@ namespace App\Http\Controllers\Course;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Course;
 
 class CourseController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        
+        $search = $request->query('search');
+        $query = Course::query();
+        if ($search) {
+            $query->where('title', 'like', '%' . $search . '%');
+        }
+        $courses = $query->paginate(10);
+        return response()->json($courses);
     }
 
     /**
@@ -36,7 +43,15 @@ class CourseController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $course = Course::find($id);
+
+        if (!$course) {
+            return response()->json([
+                'message' => 'Course not found'
+            ], 404);
+        }
+
+        return response()->json($course);
     }
 
     /**

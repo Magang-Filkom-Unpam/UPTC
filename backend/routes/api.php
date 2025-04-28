@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Course\CourseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,3 +20,5 @@ Route::middleware('auth:sanctum')->controller(UserController::class)->group(func
     Route::get('/user', 'getUserByID');
     Route::put('/user', 'updateUserById');
 });
+
+Route::apiResource('courses', CourseController::class)->only(['index', 'show']);
