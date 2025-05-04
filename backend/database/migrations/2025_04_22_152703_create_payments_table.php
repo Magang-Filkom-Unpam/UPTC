@@ -12,15 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('payments', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('method');
             $table->string('virtual_acount');
             $table->string('total_payment');
             $table->date('payment_date');
-            $table->foreignId('registration_id')->constrained(
-                table: 'registrations',
-                indexName: 'payment_registration_id'
-            );
+            $table->uuid('registration_id');
+            $table->foreign('registration_id')->references('id')->on('registrations')->onDelete('cascade');
             $table->string('status');
             $table->timestamps();
         });

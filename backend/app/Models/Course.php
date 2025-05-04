@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Course extends Model
 {
+    use HasFactory;
 
     protected $fillable = [
         'title',
@@ -18,4 +20,17 @@ class Course extends Model
         'categories',
         'price',
     ];
+
+    protected $casts = [
+        'categories' => 'array',
+    ];
+    public function registrations()
+    {
+        return $this->hasMany(Registration::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'registrations');
+    }
 }
