@@ -3,22 +3,33 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Course\CourseController;
+use App\Http\Controllers\Registration\RegistrationController;
+use App\Models\Registration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
+// Auth Routes
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login']); // name('login') opsional
     Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 });
 
-Route::middleware('auth:sanctum')->controller(UserController::class)->group(function () {
-    Route::get('/user', 'getUserByID');
+// Public Course Routes
+Route::apiResource('courses', CourseController::class)->only(['index', 'show']);
+
+// Protected Routes
+Route::middleware('auth:sanctum')->group(function () {
+
+    // User Routes
+Route::controller(UserController::class)->group(function () {
+    Route::get('/user', 'getUserById');
     Route::put('/user', 'updateUserById');
 });
 
-Route::apiResource('courses', CourseController::class)->only(['index', 'show']);
+// Course Registration
+Route::controller(RegistrationController::class)->group(function () {
+        Route::post('/course/register', 'registerCourse');
+        Route::get('/course/register', 'index');
+    });
+});

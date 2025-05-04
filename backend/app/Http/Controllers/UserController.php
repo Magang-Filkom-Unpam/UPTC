@@ -1,50 +1,43 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
-class UserController extends Controller
+class UserController extends BaseController
 {
-    public function getUserById(Request $request){
-        return response()->json([
+    public function getUserById(Request $request)
+    {
+        return $this->sendResponse([
             'user' => $request->user()
-        ], 200);
+        ], 'Data user berhasil diambil');
     }
+
     public function updateUserById(Request $request)
-{
-    try {
+    {
         $user = $request->user();
 
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'sometimes|required|string',
-            'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
+            'email' => [
+                'sometimes',
+                'required',
+                'email',
+                Rule::unique('users')->ignore($user->id),
+            ],
             'gender' => 'sometimes|required|string',
             'password' => 'sometimes|required|string|min:6',
         ]);
 
         $user->update([
-            'name' => $request->name ?? $user->name,
-            'email' => $request->email ?? $user->email,
-            'gender' => $request->gender ?? $user->gender,
-            'password' => $request->password ? bcrypt($request->password) : $user->password,
+            'name' => $validated['name'] ?? $user->name,
+            'email' => $validated['email'] ?? $user->email,
+            'gender' => $validated['gender'] ?? $user->gender,
+            'password' => isset($validated['password']) ? bcrypt($validated['password']) : $user->password,
         ]);
 
-        return response()->json([
-            'message' => 'User updated successfully',
+        return $this->sendResponse([
             'user' => $user
-        ], 200);
-
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        return response()->json([
-            'message' => 'Validation Error',
-            'errors' => $e->errors()
-        ], 422);
-    } catch (\Exception $e) {
-        return response()->json([
-            'message' => 'Server Error',
-            'error' => $e->getMessage()
-        ], 500);
+        ], 'User berhasil diperbarui');
     }
-}
 }

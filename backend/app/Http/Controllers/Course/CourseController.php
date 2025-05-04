@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Course;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
 use Illuminate\Http\Request;
 use App\Models\Course;
 
-class CourseController extends Controller
+class CourseController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -14,28 +14,26 @@ class CourseController extends Controller
     public function index(Request $request)
     {
         $search = $request->query('search');
+        $category = $request->query('category');
+
         $query = Course::query();
+
+        // Filter hanya course yang aktif
+        $query->where('is_active', true);
+
+        // Filter berdasarkan judul
         if ($search) {
             $query->where('title', 'like', '%' . $search . '%');
         }
+
+        // Filter berdasarkan kategori (dari kolom JSON)
+        if ($category) {
+            $query->whereJsonContains('categories', $category);
+        }
+
         $courses = $query->paginate(10);
-        return response()->json($courses);
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        return $this->sendResponse($courses, 'Course list retrieved successfully');
     }
 
     /**
@@ -43,38 +41,12 @@ class CourseController extends Controller
      */
     public function show(string $id)
     {
-        $course = Course::find($id);
+        $course = Course::where('is_active', true)->find($id);
 
         if (!$course) {
-            return response()->json([
-                'message' => 'Course not found'
-            ], 404);
+            return $this->sendError('Course not found', [], 404);
         }
 
-        return response()->json($course);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return $this->sendResponse($course, 'Course detail retrieved successfully');
     }
 }

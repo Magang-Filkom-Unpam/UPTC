@@ -24,4 +24,13 @@ class Course extends Model
     protected $casts = [
         'categories' => 'array',
     ];
+    public function registrations()
+    {
+        return $this->hasMany(Registration::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'registrations');
+    }
 }
