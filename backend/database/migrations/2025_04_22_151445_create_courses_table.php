@@ -19,8 +19,8 @@ return new class extends Migration
             $table->date('schedule');
             $table->date('deadline');
             $table->string('place');
-            $table->text('notes');
-            $table->json('categories');
+            $table->text('notes')->nullable();
+            $table->json('categories')->nullable();
             $table->decimal('price', 10, 2);
             $table->boolean('is_active')->default(true);
             $table->timestamps();

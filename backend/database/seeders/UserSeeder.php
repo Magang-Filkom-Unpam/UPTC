@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Facades\DB;
 
 class UserSeeder extends Seeder
 {
@@ -14,29 +15,19 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = [
-            [
-                'name' => 'admin',
-                'email' => 'admin@gmail.com',
-                'gender' => 'Laki-laki',
-                'password' => Hash::make('123')
-            ],
-            [
-                'name' => 'creator',
-                'email' => 'creator@gmail.com',
-                'gender' => 'Laki-laki',
-                'password' => Hash::make('123')
-            ],
-            [
-                'name' => 'editor',
-                'email' => 'editor@gmail.com',
-                'gender' => 'Laki-laki',
-                'password' => Hash::make('123')
-            ]
-        ];
+        
+        $adminEmail = env('ADMIN_EMAIL', 'admin@example.com');
 
-        foreach ($user as $user) {
-            User::create($user);
+        // Cegah duplikasi jika admin sudah ada
+        if (!User::where('email', $adminEmail)->exists()) {
+            User::create([
+                'name' => env('ADMIN_NAME', 'Admin'),
+                'email' => $adminEmail,
+                'password' => Hash::make(env('ADMIN_PASSWORD', 'password')),
+                'gender' => 'male',
+                'roles' => 'admin',
+            ]);
         }
+        
     }
 }
