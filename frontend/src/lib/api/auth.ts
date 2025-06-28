@@ -1,30 +1,22 @@
 import instance from '@/lib/axios';
-import type { User } from '@/types';
+import type { LoginResponse, RegisterResponse, User, UserResponse } from '@/types';
 
-export const registerUser = async ({
-    name,
-    email,
-    password,
-}: Pick<User, 'name' | 'email' | 'password'>): Promise<User[]> => {
-    const response = await instance.post('/api/auth/register', {
-        name,
-        email,
-        password,
-    });
-
-    return response.data;
+export const registerUser = async (
+    data: Pick<User, 'email' | 'password' | 'name'>
+): Promise<RegisterResponse> => {
+    const res = await instance.post('/api/auth/register', data);
+    return res.data;
 };
 
 export const loginUser = async ({
     email,
     password,
-}: Pick<User, 'email' | 'password'>): Promise<User[]> => {
+}: Pick<User, 'email' | 'password'>): Promise<LoginResponse> => {
     const res = await instance.post('/api/auth/login', { email, password });
-
     return res.data;
 };
 
-export const getUser = async (): Promise<User[]> => {
+export const getUser = async (): Promise<UserResponse> => {
     const token = localStorage.getItem('token');
 
     if (!token) throw new Error('Token not found');
@@ -34,5 +26,5 @@ export const getUser = async (): Promise<User[]> => {
             Authorization: `Bearer ${token}`,
         },
     });
-    return response.data.data;
+    return response.data;
 };

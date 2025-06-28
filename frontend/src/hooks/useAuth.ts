@@ -1,10 +1,10 @@
 'use client'
 
+import { useEffect, useState } from 'react';
 import { getUser, loginUser, registerUser } from '@/lib/api/auth';
 import { useMutation, useQuery} from '@tanstack/react-query';
-import type { User } from '@/types';
-import type { AxiosError } from 'axios';
-import { useEffect, useState } from 'react';
+import { LoginResponse, RegisterResponse, User, UserResponse } from '@/types';
+import { AxiosError } from 'axios';
 
 
 export const useUser = () => {
@@ -14,23 +14,31 @@ export const useUser = () => {
         setIsClient(true);
     }, []);
 
-    return useQuery({
+    return useQuery<UserResponse>({
         queryKey: ['user'],
         queryFn: getUser,
         enabled: isClient && !!localStorage.getItem('token'),
-        staleTime: 1000 * 60 * 5, // cache 5 menit
+        staleTime: 1000 * 60 * 5, 
         retry: false,
     });
 };
 
 export const useRegister = () => {
-    return useMutation({
+    return useMutation<
+        RegisterResponse,
+        AxiosError,
+        Pick<User, 'email' | 'password' | 'name'>
+    >({
         mutationFn: registerUser,
     });
 };
 
 export const useLogin = () => {
-    return useMutation<unknown, AxiosError, User>({
+    return useMutation<
+        LoginResponse, 
+        AxiosError,
+        Pick<User, 'email' | 'password'> 
+    >({
         mutationFn: loginUser,
     });
 };

@@ -1,17 +1,19 @@
+import { Metadata } from 'next';
 import { getCourseById, getCourses } from '@/lib/api/course';
 import { formatCurrency } from '@/utils/formatCurrency';
 import { formatDate } from '@/utils/formateDate';
-import { Icon } from '@iconify/react';
-import { Metadata } from 'next';
 import Image from 'next/image';
 import RelatedCourse from '@/components/course/related-course';
+import ButtonRegisterCourse from '@/components/course/button-register-course';
+import { Course } from '@/types';
 
-export async function generateMetadata({
-    params,
-}: {
-    params: { slug: string };
-}): Promise<Metadata> {
-    const id = params.slug.split('-').pop();
+type Props = {
+    params: Promise<{ slug: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { slug } = await params;
+    const id = slug.split('-').pop();
     const course = await getCourseById(id || '');
 
     if (!course) {
@@ -45,13 +47,13 @@ export async function generateMetadata({
     };
 }
 
-const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
+const Page = async ({ params }: Props) => {
     const { slug } = await params;
-    const id: string | undefined = slug?.split('-').pop();
+    const id: string = slug.split('-').pop() || '';
 
-    const course = await getCourseById(id || '');
-    const courses = await getCourses();
-    const relatedCourses = courses?.filter(
+    const course: Course = await getCourseById(id);
+    const courses: Course[] = await getCourses();
+    const relatedCourses: Course[] = courses?.filter(
         (item) =>
             item.id !== course.id &&
             item.categories.some((cat: string) => course.categories.includes(cat))
@@ -103,15 +105,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
                         </div>
 
                         {/* Tombol daftar */}
-                        <button className='mt-2 w-full sm:w-fit bg-primary hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-md transition text-sm'>
-                            <div className='flex items-center gap-2 justify-center'>
-                                <Icon
-                                    icon='mdi:clipboard-edit'
-                                    className='text-lg'
-                                />
-                                Daftar Sekarang
-                            </div>
-                        </button>
+                        <ButtonRegisterCourse id={id} />
                     </div>
                 </div>
 

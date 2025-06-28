@@ -8,14 +8,14 @@ import { useState } from 'react';
 import { useLogin } from '@/hooks/useAuth';
 import Link from 'next/link';
 
-export default function LoginPage() {
+export default function Page() {
     const [state, setState] = useState<User>({
         email: '',
         password: '',
     });
 
     const [error, setError] = useState<{ email?: string; password?: string }>({});
-    const { mutate, isLoading } = useLogin();
+    const {mutate, status} = useLogin();
 
     const queryClient = useQueryClient();
     const router = useRouter();
@@ -31,8 +31,11 @@ export default function LoginPage() {
                 password: state.password,
             },
             {
-                onError: (error: AxiosError<any>) => {
-                    const errors = error.response?.data?.errors;
+                onError: (error) => {
+                    const axiosError = error as AxiosError<{
+                        errors?: Record<string, string[]>;
+                    }>;
+                    const errors = axiosError.response?.data?.errors;
 
                     setError({
                         email: errors?.email?.[0],
@@ -111,9 +114,9 @@ export default function LoginPage() {
                     <button
                         type='submit'
                         className='w-full bg-primary cursor-pointer text-white py-2 rounded-md hover:bg-blue-700 transition'
-                        disabled={isLoading}
+                        disabled={status === 'pending'}
                     >
-                        {isLoading ? 'Loading...' : 'Login'}
+                        {status === 'pending' ? 'Loading...' : 'Login'}
                     </button>
                 </form>
 

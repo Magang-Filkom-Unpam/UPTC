@@ -9,10 +9,11 @@ export const useCourses = () => {
     });
 };
 
-export const useRegisteredCourses = () =>
+export const useRegisteredCourses = (options?: { enabled?: boolean }) =>
     useQuery({
         queryKey: ['registered-courses'],
         queryFn: getRegisteredCourses,
+        enabled: options?.enabled ?? true, // <- default true
     });
 
 export const useRegisterToCourse = () => {
@@ -22,6 +23,7 @@ export const useRegisterToCourse = () => {
         mutationFn: registerToCourse,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['registered-courses'] });
+            window.location.href = '/myclass'
         },
     });
 };

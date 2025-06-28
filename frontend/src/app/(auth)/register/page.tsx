@@ -5,18 +5,22 @@ import type { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useLogin, useRegister } from '@/hooks/useAuth';
 import Link from 'next/link';
+import { useRegister } from '@/hooks/useAuth';
 
 export default function Page() {
     const [state, setState] = useState<User>({
-        name:'',
+        name: '',
         email: '',
         password: '',
     });
 
-    const [error, setError] = useState<{ name?:string,email?: string; password?: string }>({});
-    const { mutate, isLoading } = useRegister();
+    const [error, setError] = useState<{
+        name?: string;
+        email?: string;
+        password?: string;
+    }>({});
+    const { mutate, status } = useRegister();
 
     const queryClient = useQueryClient();
     const router = useRouter();
@@ -28,16 +32,19 @@ export default function Page() {
 
         mutate(
             {
-                name:state.name,
+                name: state.name,
                 email: state.email,
                 password: state.password,
             },
             {
-                onError: (error: AxiosError<any>) => {
-                    const errors = error.response?.data?.errors;
+                onError: (error: AxiosError) => {
+                    const axiosError = error as AxiosError<{
+                        errors?: Record<string, string[]>;
+                    }>;
+                    const errors = axiosError.response?.data?.errors;
 
                     setError({
-                        name:errors?.name?.[0],
+                        name: errors?.name?.[0],
                         email: errors?.email?.[0],
                         password: errors?.password?.[0],
                     });
@@ -51,7 +58,7 @@ export default function Page() {
 
                     router.push('/');
 
-                    setState({ name:'',email: '', password: '' });
+                    setState({ name: '', email: '', password: '' });
                 },
             }
         );
@@ -135,9 +142,9 @@ export default function Page() {
                     <button
                         type='submit'
                         className='w-full bg-primary cursor-pointer text-white py-2 rounded-md hover:bg-blue-700 transition'
-                        disabled={isLoading}
+                        disabled={status === 'pending'}
                     >
-                        {isLoading ? 'Loading...' : 'Daftar'}
+                        {status === 'pending' ? 'Loading...' : 'Daftar'}
                     </button>
                 </form>
 

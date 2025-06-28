@@ -14,7 +14,7 @@ const Navlink = () => {
     const [open, setOpen] = useState(false);
     const { data, isLoading } = useUser();
     const [isClient, setIsClient] = useState(false);
-
+    
     useEffect(() => {
         setIsClient(true);
     }, []);
@@ -60,7 +60,7 @@ const Navlink = () => {
                 <div>
                     {!isClient || isLoading ? (
                         <div className='w-14 h-8 bg-secondary rounded animate-pulse'></div>
-                    ) : data?.user ? (
+                    ) : data?.data?.user ? (
                         <Profile />
                     ) : (
                         <Link
@@ -95,7 +95,7 @@ const Navlink = () => {
             <div className='hidden md:block'>
                 {!isClient || isLoading ? (
                     <div className='w-14 h-8 bg-secondary rounded animate-pulse'></div>
-                ) : data?.user ? (
+                ) : data?.data?.user ? (
                     <Profile />
                 ) : (
                     <Link

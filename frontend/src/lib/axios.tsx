@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-
 const instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
     headers: {
@@ -10,8 +8,11 @@ const instance = axios.create({
 });
 
 instance.interceptors.request.use((config) => {
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
     }
     return config;
 });
