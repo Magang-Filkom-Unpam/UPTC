@@ -30,13 +30,22 @@ const HeroSection = () => {
                             </>
                         ) : (
                             <>
-                                {!data && (
-                                    <button className="bg-primary rounded-sm px-3 py-1.5 text-white">
-                                        <Link href="/login">Get Started</Link>
-                                    </button>
-                                )}
+                                <button className="bg-primary rounded-sm px-3 py-1.5 text-white">
+                                    <Link
+                                        href={
+                                            data?.data?.user
+                                                ? "course"
+                                                : "login"
+                                        }
+                                    >
+                                        Get Started
+                                    </Link>
+                                </button>
+
                                 <button className="rounded-sm border bg-white px-3 py-1.5">
-                                    <Link href="">Lihat Selengkapnya</Link>
+                                    <Link href="#latests-programs">
+                                        Lihat Selengkapnya
+                                    </Link>
                                 </button>
                             </>
                         )}

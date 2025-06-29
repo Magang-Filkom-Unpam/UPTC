@@ -4,7 +4,7 @@ import RatingsSection from "@/components/home/ratings-section";
 import SponsorSection from "@/components/home/sponsors-section";
 import StepsSection from "@/components/home/steps-section";
 
-export default function Home() {
+export default async function Home({}) {
     return (
         <>
             <HeroSection />

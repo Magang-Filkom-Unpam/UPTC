@@ -7,7 +7,10 @@ import { sponsors } from "@/lib/constant";
 const SponsorSection = () => {
     return (
         <section className="responsive-px mt-10 md:-mt-8 lg:px-24">
-            <div className="flex flex-wrap items-center justify-center gap-8">
+            <div
+                className="flex flex-wrap items-center justify-center gap-8"
+                id="latests-programs"
+            >
                 {[...sponsors, ...sponsors].map((data, i) => (
                     <div key={i}>
                         <Image
