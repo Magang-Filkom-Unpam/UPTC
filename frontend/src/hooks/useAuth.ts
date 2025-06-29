@@ -1,11 +1,11 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react';
-import { getUser, loginUser, registerUser } from '@/lib/api/auth';
-import { useMutation, useQuery} from '@tanstack/react-query';
-import { LoginResponse, RegisterResponse, User, UserResponse } from '@/types';
-import { AxiosError } from 'axios';
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { useEffect, useState } from "react";
 
+import { getUser, loginUser, registerUser, updateUser } from "@/lib/api/auth";
+import { LoginResponse, RegisterResponse, User, UserResponse } from "@/types";
 
 export const useUser = () => {
     const [isClient, setIsClient] = useState(false);
@@ -15,10 +15,10 @@ export const useUser = () => {
     }, []);
 
     return useQuery<UserResponse>({
-        queryKey: ['user'],
+        queryKey: ["user"],
         queryFn: getUser,
-        enabled: isClient && !!localStorage.getItem('token'),
-        staleTime: 1000 * 60 * 5, 
+        enabled: isClient && !!localStorage.getItem("token"),
+        staleTime: 1000 * 60 * 5,
         retry: false,
     });
 };
@@ -27,7 +27,7 @@ export const useRegister = () => {
     return useMutation<
         RegisterResponse,
         AxiosError,
-        Pick<User, 'email' | 'password' | 'name'>
+        Pick<User, "email" | "password" | "name">
     >({
         mutationFn: registerUser,
     });
@@ -35,10 +35,16 @@ export const useRegister = () => {
 
 export const useLogin = () => {
     return useMutation<
-        LoginResponse, 
+        LoginResponse,
         AxiosError,
-        Pick<User, 'email' | 'password'> 
+        Pick<User, "email" | "password">
     >({
         mutationFn: loginUser,
+    });
+};
+
+export const useUpdateUser = () => {
+    return useMutation<UserResponse, AxiosError, Partial<User>>({
+        mutationFn: updateUser,
     });
 };

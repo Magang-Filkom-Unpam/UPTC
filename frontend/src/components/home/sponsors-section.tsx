@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import { sponsors } from '@/lib/constant';
-import Image from 'next/image';
+import Image from "next/image";
+
+import { sponsors } from "@/lib/constant";
 
 const SponsorSection = () => {
     return (
-        <section className='responsive-px lg:px-24 mt-10 md:-mt-8'>
-            <div className='flex items-center justify-center gap-8 flex-wrap'>
+        <section className="responsive-px mt-10 md:-mt-8 lg:px-24">
+            <div className="flex flex-wrap items-center justify-center gap-8">
                 {[...sponsors, ...sponsors].map((data, i) => (
                     <div key={i}>
                         <Image
@@ -15,7 +16,7 @@ const SponsorSection = () => {
                             title={data.title}
                             width={data.width}
                             height={data.height}
-                            className='object-contain w-auto'
+                            className="w-auto object-contain"
                         />
                     </div>
                 ))}

@@ -1,11 +1,13 @@
-import { Metadata } from 'next';
-import { getCourseById, getCourses } from '@/lib/api/course';
-import { formatCurrency } from '@/utils/formatCurrency';
-import { formatDate } from '@/utils/formateDate';
-import Image from 'next/image';
-import RelatedCourse from '@/components/course/related-course';
-import ButtonRegisterCourse from '@/components/course/button-register-course';
-import { Course } from '@/types';
+import { Metadata } from "next";
+import Image from "next/image";
+
+import ButtonRegisterCourse from "@/components/course/button-register-course";
+import ExplanationSection from "@/components/course/explanation-section";
+import RelatedCourse from "@/components/course/related-course";
+import { getCourseById, getCourses } from "@/lib/api/course";
+import { Course } from "@/types";
+import { formatCurrency } from "@/utils/formatCurrency";
+import { formatDate } from "@/utils/formateDate";
 
 type Props = {
     params: Promise<{ slug: string }>;
@@ -13,18 +15,18 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params;
-    const id = slug.split('-').pop();
-    const course = await getCourseById(id || '');
+    const id = slug.split("-").pop();
+    const course = await getCourseById(id || "");
 
     if (!course) {
         return {
-            title: 'Course Not Found',
-            description: 'The course you are looking for does not exist.',
+            title: "Course Not Found",
+            description: "The course you are looking for does not exist.",
         };
     }
 
     return {
-        title: `UPTC | ${course.title}`,
+        title: `UPTC | Course | ${course.title}`,
         description: course.description?.slice(0, 160),
         openGraph: {
             title: `UPTC | ${course.title}`,
@@ -39,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             ],
         },
         twitter: {
-            card: 'summary_large_image',
+            card: "summary_large_image",
             title: `UPTC | ${course.title}`,
             description: course.description?.slice(0, 160),
             images: [course.image],
@@ -49,22 +51,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const Page = async ({ params }: Props) => {
     const { slug } = await params;
-    const id: string = slug.split('-').pop() || '';
+    const id: string = slug.split("-").pop() || "";
 
     const course: Course = await getCourseById(id);
     const courses: Course[] = await getCourses();
     const relatedCourses: Course[] = courses?.filter(
         (item) =>
             item.id !== course.id &&
-            item.categories.some((cat: string) => course.categories.includes(cat))
+            item.categories.some((cat: string) =>
+                course.categories.includes(cat),
+            ),
     );
 
     return (
         <>
-            <section className='responsive-px py-6 md:py-10 max-w-7xl mx-auto space-y-4 md:space-y-8'>
-                <div className='grid grid-cols-1 lg:grid-cols-2'>
+            <section className="responsive-px mx-auto max-w-7xl space-y-4 py-6 md:space-y-8 md:py-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2">
                     {/* Image */}
-                    <div className='rounded-xl overflow-hidden w-full lg:max-w-md mx-auto'>
+                    <div className="mx-auto w-full overflow-hidden rounded-xl lg:max-w-md">
                         <Image
                             src={course.image}
                             alt={course.title}
@@ -72,35 +76,35 @@ const Page = async ({ params }: Props) => {
                             height={600}
                             unoptimized
                             priority
-                            className='rounded-md object-contain w-full h-auto'
+                            className="h-auto w-full rounded-md object-contain"
                         />
                     </div>
 
                     {/* Detail */}
-                    <div className='flex flex-col gap-3 mt-6 lg:mt-0'>
+                    <div className="mt-6 flex flex-col gap-3 lg:mt-0">
                         {/* Kategori */}
-                        <div className='flex flex-wrap gap-2'>
+                        <div className="flex flex-wrap gap-2">
                             {course.categories.map((cat: string) => (
                                 <span
                                     key={cat}
-                                    className='bg-primary text-white text-[8px] px-3 py-1 rounded-md uppercase tracking-wider'
+                                    className="bg-primary rounded-md px-3 py-1 text-[8px] tracking-wider text-white uppercase"
                                 >
                                     {cat}
                                 </span>
                             ))}
                         </div>
 
-                        <h1 className='text-3xl md:text-4xl font-bold text-gray-800'>
+                        <h1 className="text-3xl font-bold text-gray-800 md:text-4xl">
                             {course.title}
                         </h1>
-                        <p className='text-gray-600 leading-relaxed text-justify'>
-                            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nemo
-                            expedita fuga neque obcaecati, at omnis
+                        <p className="text-justify leading-relaxed text-gray-600">
+                            Lorem ipsum dolor sit, amet consectetur adipisicing
+                            elit. Nemo expedita fuga neque obcaecati, at omnis
                             {course.description}
                         </p>
 
                         {/* Harga */}
-                        <div className='text-2xl font-semibold text-primary'>
+                        <div className="text-primary text-2xl font-semibold">
                             {formatCurrency(course.price)}
                         </div>
 
@@ -109,32 +113,45 @@ const Page = async ({ params }: Props) => {
                     </div>
                 </div>
 
+                <div className="border-t pt-6">
+                    <ExplanationSection />
+                </div>
+
                 {/* Informasi Tambahan */}
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-600 border-t pt-8'>
-                    <div className='space-y-2'>
+                <div className="grid grid-cols-1 gap-6 border-t pt-6 text-sm text-gray-600 md:grid-cols-2">
+                    <div className="space-y-2">
                         <p>
-                            <strong className='text-gray-800'>📍 Lokasi:</strong>{' '}
+                            <strong className="text-gray-800">
+                                📍 Lokasi:
+                            </strong>{" "}
                             {course.place}
                         </p>
                         <p>
-                            <strong className='text-gray-800'>📅 Jadwal:</strong>{' '}
+                            <strong className="text-gray-800">
+                                📅 Jadwal:
+                            </strong>{" "}
                             {formatDate(course.schedule)}
                         </p>
                         <p>
-                            <strong className='text-gray-800'>⏳ Deadline:</strong>{' '}
+                            <strong className="text-gray-800">
+                                ⏳ Deadline:
+                            </strong>{" "}
                             {formatDate(course.deadline)}
                         </p>
                     </div>
                     {course.notes && (
-                        <div className='space-y-2'>
+                        <div className="space-y-2">
                             <p>
-                                <strong className='text-gray-800'>📝 Catatan:</strong>{' '}
+                                <strong className="text-gray-800">
+                                    📝 Catatan:
+                                </strong>{" "}
                                 {course.notes}
                             </p>
                         </div>
                     )}
                 </div>
             </section>
+
             <RelatedCourse relatedCourses={relatedCourses} />
         </>
     );

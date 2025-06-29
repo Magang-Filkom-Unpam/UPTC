@@ -1,9 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getCourses, getRegisteredCourses, registerToCourse } from '@/lib/api/course';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import {
+    getCourses,
+    getRegisteredCourses,
+    registerToCourse,
+} from "@/lib/api/course";
 
 export const useCourses = () => {
     return useQuery({
-        queryKey: ['courses'],
+        queryKey: ["courses"],
         queryFn: getCourses,
         staleTime: 1000 * 60 * 5,
     });
@@ -11,9 +16,9 @@ export const useCourses = () => {
 
 export const useRegisteredCourses = (options?: { enabled?: boolean }) =>
     useQuery({
-        queryKey: ['registered-courses'],
+        queryKey: ["registered-courses"],
         queryFn: getRegisteredCourses,
-        enabled: options?.enabled ?? true, // <- default true
+        enabled: options?.enabled ?? true,
     });
 
 export const useRegisterToCourse = () => {
@@ -22,8 +27,7 @@ export const useRegisterToCourse = () => {
     return useMutation({
         mutationFn: registerToCourse,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['registered-courses'] });
-            window.location.href = '/myclass'
+            queryClient.invalidateQueries({ queryKey: ["registered-courses"] });
         },
     });
 };

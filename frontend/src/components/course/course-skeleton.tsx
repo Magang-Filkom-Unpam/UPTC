@@ -1,16 +1,16 @@
-import { SwiperSlide } from 'swiper/react';
+import { SwiperSlide } from "swiper/react";
 
 const CourseSkeleton = () => (
     <SwiperSlide>
-        <div className='w-full h-[400px] overflow-hidden rounded-lg shadow-lg border animate-pulse bg-gray-100 flex flex-col'>
-            <div className='h-48 bg-gray-300 w-full' />
-            <div className='p-4 space-y-2 flex-1'>
-                <div className='h-4 bg-gray-300 rounded w-3/4' />
-                <div className='h-3 bg-gray-200 rounded w-full' />
-                <div className='h-3 bg-gray-200 rounded w-5/6' />
+        <div className="bg-secondary flex h-[400px] w-full animate-pulse flex-col overflow-hidden rounded-lg border shadow-lg">
+            <div className="bg-secondary h-48 w-full" />
+            <div className="flex-1 space-y-2 p-4">
+                <div className="bg-secondary h-4 w-3/4 rounded" />
+                <div className="bg-secondary h-3 w-full rounded" />
+                <div className="bg-secondary h-3 w-5/6 rounded" />
             </div>
-            <div className='p-4 mt-auto'>
-                <div className='h-4 bg-gray-300 rounded w-1/2' />
+            <div className="mt-auto p-4">
+                <div className="bg-secondary h-4 w-1/2 rounded" />
             </div>
         </div>
     </SwiperSlide>

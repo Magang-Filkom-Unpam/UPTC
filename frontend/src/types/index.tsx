@@ -1,4 +1,4 @@
-import { StaticImageData } from 'next/image';
+import { StaticImageData } from "next/image";
 
 /** ====================
  *  Global Types
@@ -63,7 +63,7 @@ export type RegisterResponse = BaseResponse<
     {
         user: Pick<
             User,
-            'id' | 'name' | 'email' | 'gender' | 'created_at' | 'updated_at'
+            "id" | "name" | "email" | "gender" | "created_at" | "updated_at"
         >;
     } & AuthToken
 >;
@@ -94,7 +94,7 @@ export type Course = {
 export type RegisteredCourse = {
     id: number;
     course: Course;
-    status: 'paid' | 'pending' | 'cancelled';
+    status: "paid" | "pending" | "cancelled";
     date: string;
 };
 
@@ -112,7 +112,7 @@ export type RegistrationResponse = {
 };
 
 export type ApiResponse<T> = {
-    status: 'success' | 'error';
+    status: "success" | "error";
     message: string;
     data: T;
 };
