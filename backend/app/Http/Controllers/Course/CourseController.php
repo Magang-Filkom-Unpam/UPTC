@@ -31,7 +31,7 @@ class CourseController extends BaseController
             $query->whereJsonContains('categories', $category);
         }
 
-        $courses = $query->paginate(10);
+        $courses = $query->get();
 
         return $this->sendResponse($courses, 'Course list retrieved successfully');
     }

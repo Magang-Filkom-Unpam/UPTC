@@ -64,18 +64,18 @@ class RegistrationController extends BaseController
     {
         $user = $request->user();
 
-        $registrations = Registration::with('course:id,title')
+        $registrations = Registration::with('course')
             ->where('user_id', $user->id)
             ->orderBy('date', 'desc')
-            ->paginate(10);
+            ->get();
 
-        $data = $registrations->through(function ($registration) {
-            return [
+        $data = $registrations->map(function ($registration) {
+         return [
                 'id' => $registration->id,
                 'course' => $registration->course,
                 'status' => $registration->status,
                 'date' => $registration->date,
-            ];
+         ];
         });
 
         return $this->sendResponse($data, 'Registration list retrieved successfully');
